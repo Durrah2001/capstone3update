@@ -22,4 +22,11 @@ public interface MotorcycleRepository extends JpaRepository<Motorcycle, Integer>
 
     // Find motorcycles by maximum price
     List<Motorcycle> findByPriceLessThanEqual(Double maxPrice);
+
+    List<Motorcycle> findMotorcycleByIsAvailable(Boolean isAvailable);
+
+    List<Motorcycle> findMotorcycleByIsForSale(Boolean isForSale);
+
+    List<Motorcycle> findMotorcycleByBrandAndYear(String brand, Integer year);
+    List<Motorcycle> findMotorcycleByBrandAndModel(String brand, String model);
 }

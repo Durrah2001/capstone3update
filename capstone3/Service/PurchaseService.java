@@ -35,7 +35,7 @@ public class PurchaseService {
         List<PurchaseOutDTO> purchaseOutDTOs = new ArrayList<>();
         for (Purchase purchase : purchases) {
             Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(purchase.getMotorcycleId());
-            purchaseOutDTOs.add(new PurchaseOutDTO(purchase.getPurchaseDate(),motorcycle.getIsForSale(),new PurchaseUserOutDTO(purchase.getUser().getName(),purchase.getUser().getEmail(),purchase.getUser().getPhoneNumber(),purchase.getUser().getAge(),purchase.getUser().getAddress()),new PurchaseMotorcycleOutDTO(motorcycle.getBrand(),motorcycle.getModel(),motorcycle.getYear(),motorcycle.getPrice(),motorcycle.getColor(),motorcycle.getIsAvailable())));
+            purchaseOutDTOs.add(new PurchaseOutDTO(purchase.getPurchaseDate(),new PurchaseUserOutDTO(purchase.getUser().getName(),purchase.getUser().getEmail(),purchase.getUser().getPhoneNumber(),purchase.getUser().getAge(),purchase.getUser().getAddress()),new PurchaseMotorcycleOutDTO(motorcycle.getBrand(),motorcycle.getModel(),motorcycle.getYear(),motorcycle.getPrice(),motorcycle.getColor(),motorcycle.getIsAvailable())));
         }
         return purchaseOutDTOs;
     }
@@ -50,21 +50,32 @@ public class PurchaseService {
             throw new ApiException("User not found");
         }
         Owner owner = ownerRepository.findOwnerById(purchaseInDTO.getOwnerId());
-        Set<Motorcycle> motorcycleOwner = owner.getMotorcycles();
-        for (Motorcycle mo:owner.getMotorcycles()){
-            if (mo.getId() == motorcycle.getId()) {
-                motorcycleOwner.remove(mo);
-            }
-        }
         if (owner == null) {
             throw new ApiException("Owner not found");
         }
-        if (motorcycle.getIsAvailable() && motorcycle.getIsForSale()) {
+        if (motorcycle.getIsForSale() == true && motorcycle.getIsAvailable() == true) {
             Purchase purchase = new Purchase(user, motorcycle.getId());
+            purchase.setOwner(owner);
             purchaseRepository.save(purchase);
-            owner.setMotorcycles(motorcycleOwner);
+
+            motorcycle.setIsAvailable(false);
+            motorcycle.setIsForSale(false);
+            motorcycle.setOwner(null);
+            Set<Motorcycle> motorcycles = owner.getMotorcycles();
+
+            if (motorcycles.contains(motorcycle)) {
+                motorcycles.remove(motorcycle);
+            }else{
+                throw new ApiException("Motorcycle not found");
+            }
+
             ownerRepository.save(owner);
+            motorcycleRepository.save(motorcycle);
+
+        }else{
+            throw new ApiException("This motorcycle not for sale");
         }
+
 
     }
 

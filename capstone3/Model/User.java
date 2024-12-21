@@ -59,8 +59,11 @@ public class User {
 
     //Relations
 
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+//    private Set<EventRegistration> EventRegistrations;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<EventRegistration> EventRegistrations;
+    private Set<UserEventRegistration> UserEventRegistrations;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Purchase> purchases;

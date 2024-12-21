@@ -16,10 +16,10 @@ public class RentingRequestDTO_In {
 
     private Integer user_id;
 
-    @FutureOrPresent(message = "Start date must be in the present or future")
+   // @FutureOrPresent(message = "Start date must be in the present or future")
     private LocalDate startDate;
 
-    @Future(message = "End date must be in the future")
+   // @Future(message = "End date must be in the future")
     private LocalDate endDate;
 
     private Integer motorcycle_id;

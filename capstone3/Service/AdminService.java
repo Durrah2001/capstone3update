@@ -35,7 +35,11 @@ public class AdminService {
 
 
     public void addAdmin(Admin admin){
-        adminRepository.save(admin);
+        if (adminRepository.findAll().isEmpty()) {
+            adminRepository.save(admin);
+        }else{
+            throw new ApiException("Admin already exists");
+        }
     }
 
     public void updateAdmin(Integer id,Admin admin){

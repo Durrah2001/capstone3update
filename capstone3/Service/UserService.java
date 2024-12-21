@@ -25,40 +25,49 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserOutDTO> userOutDTOs = new ArrayList<>();
 
-        List<EventRegistration> eventRegistrations = new ArrayList<>();
-        List<EventRegistrationOutDTO> eventRegistrationOutDTOs = new ArrayList<>();
-
-        List<Purchase> purchases = new ArrayList<>();
-        List<PurchaseOutDTO> purchaseOutDTOs = new ArrayList<>();
-
-        List<RentingRequest> rentingRequests = new ArrayList<>();
-        List<RentingRequestOutDTO> rentingRequestOutDTOs = new ArrayList<>();
-        List<BookingCourse> bookingCourses = new ArrayList<>();
-        List<BookingCourseOutDTO> bookingCourseOutDTOs = new ArrayList<>();
-
         for (User user : users) {
-            for (EventRegistration er:user.getEventRegistrations()){
-                eventRegistrations.add(er);
-                eventRegistrationOutDTOs.add(new EventRegistrationOutDTO(er.getEvent().getId(),er.getOwner().getId(),er.getUser().getId(),er.getMotorcycle().getId(),er.getStatus()));
+            List<UserEventRegistrationOutDTO> userEventRegistrationOutDTOs = new ArrayList<>();
+            if (user.getUserEventRegistrations() != null) {
+                for (UserEventRegistration er : user.getUserEventRegistrations()) {
+                    if (er.getEvent() != null) {
+                        userEventRegistrationOutDTOs.add(new UserEventRegistrationOutDTO(er.getStatus(), er.getEvent().getId(), er.getUser().getId()));
+                    }
+                }
             }
-            for (Purchase p:purchases){
-                purchases.add(p);
-                Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(p.getMotorcycleId());
-                purchaseOutDTOs.add(new PurchaseOutDTO(p.getPurchaseDate(),new PurchaseUserOutDTO(user.getName(),user.getEmail(),user.getPhoneNumber(),user.getAge(),user.getAddress()),new PurchaseMotorcycleOutDTO(motorcycle.getBrand(),motorcycle.getModel(),motorcycle.getYear(),motorcycle.getPrice(),motorcycle.getColor(),motorcycle.getIsAvailable())));
+
+            List<PurchaseOutDTO> purchaseOutDTOs = new ArrayList<>();
+            if (user.getPurchases() != null) {
+                for (Purchase p : user.getPurchases()) {
+                    Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(p.getMotorcycleId());
+                    if (motorcycle != null) {
+                        purchaseOutDTOs.add(new PurchaseOutDTO(
+                                p.getPurchaseDate(),
+                                new PurchaseUserOutDTO(user.getName(), user.getEmail(), user.getPhoneNumber(), user.getAge(), user.getAddress()),
+                                new PurchaseMotorcycleOutDTO(motorcycle.getBrand(), motorcycle.getModel(), motorcycle.getYear(), motorcycle.getPrice(), motorcycle.getColor(), motorcycle.getIsAvailable())));
+                    }
+                }
             }
-            for (RentingRequest r:rentingRequests){
-                rentingRequests.add(r);
-                rentingRequestOutDTOs.add(new RentingRequestOutDTO(r.getRequestDate(),r.getStartDate(),r.getEndDate(),r.getTotalCost()));
+
+            // Prepare RentingRequestOutDTOs
+            List<RentingRequestOutDTO> rentingRequestOutDTOs = new ArrayList<>();
+            if (user.getRentingRequests() != null) {
+                for (RentingRequest r : user.getRentingRequests()) {
+                    rentingRequestOutDTOs.add(new RentingRequestOutDTO(r.getRequestDate(), r.getStartDate(), r.getEndDate(), r.getTotalCost()));
+                }
             }
-            for (BookingCourse bc:bookingCourses){
-                bookingCourses.add(bc);
-                bookingCourseOutDTOs.add(new BookingCourseOutDTO(bc.getBookingDate(),bc.getCourseStartDate(),bc.getCourseEndDate()));
+
+            // Prepare BookingCourseOutDTOs
+            List<BookingCourseOutDTO> bookingCourseOutDTOs = new ArrayList<>();
+            if (user.getBookings() != null) {
+                for (BookingCourse bc : user.getBookings()) {
+                    bookingCourseOutDTOs.add(new BookingCourseOutDTO(bc.getBookingDate(), bc.getCourseStartDate(), bc.getCourseEndDate()));
+                }
             }
-            userOutDTOs.add(new UserOutDTO(user.getName(),user.getEmail(),user.getPhoneNumber(),user.getAge(),user.getAddress(),eventRegistrationOutDTOs,purchaseOutDTOs,rentingRequestOutDTOs,bookingCourseOutDTOs));
+            userOutDTOs.add(new UserOutDTO(user.getName(), user.getEmail(), user.getPhoneNumber(), user.getAge(), user.getAddress(), userEventRegistrationOutDTOs, purchaseOutDTOs, rentingRequestOutDTOs, bookingCourseOutDTOs));
         }
+
         return userOutDTOs;
     }
-
 
 
     public void addUser(User user) {
@@ -84,6 +93,22 @@ public class UserService {
             throw new ApiException("User not found");
         }
         userRepository.delete(user);
+    }
+
+
+    public List<String> getAllBadge(Integer id) {
+        User user = userRepository.findUserById(id);
+        if (user == null) {
+            throw new ApiException("User not found");
+        }
+        if (user.getUserEventRegistrations() == null) {
+            throw new ApiException("User does not have badge");
+        }
+        List<String> Badge = new ArrayList<>();
+        for(String s:user.getBadges()){
+            Badge.add(s);
+        }
+        return Badge;
     }
 
 

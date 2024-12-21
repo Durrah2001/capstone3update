@@ -8,4 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 
     Owner findOwnerById(Integer id);
+
+    Owner findOwnerByMotorcyclesId(Integer id);
+
+
 }

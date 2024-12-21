@@ -30,13 +30,14 @@ public class MotorcycleService {
 
         for(Motorcycle motorcycle : motorcycles){
 
-            MotorcycleOutDTO motorcycleDTO = new MotorcycleOutDTO(motorcycle.getBrand(), motorcycle.getModel(), motorcycle.getYear(), motorcycle.getPrice(), motorcycle.getColor(), motorcycle.getIsAvailable(), motorcycle.getIsForSale());
+            MotorcycleOutDTO motorcycleDTO = new MotorcycleOutDTO(motorcycle.getBrand(), motorcycle.getModel(), motorcycle.getYear(), motorcycle.getPrice(), motorcycle.getColor(), motorcycle.getIsAvailable(), motorcycle.getIsForSale(),motorcycle.getHasOffer());
 
             motorcycleDTOS.add(motorcycleDTO);
         }
 
         return motorcycleDTOS;
     }
+
 
     public void addMotorcycleByOwner(Integer owner_id, Motorcycle motorcycle) {
 
@@ -76,6 +77,8 @@ public class MotorcycleService {
         m.setYear(motorcycle.getYear());
         m.setIsAvailable(motorcycle.getIsAvailable());
         m.setIsForSale(motorcycle.getIsForSale());
+        m.setHasOffer(motorcycle.getHasOffer());
+
         motorcycleRepository.save(m);
     }
 
@@ -109,6 +112,118 @@ public class MotorcycleService {
         }
         return motorcycleRepository.findAll();
     }
+
+    public List<Motorcycle> getAvailableMotorcycles(){
+        List<Motorcycle> availableMotorcycles = motorcycleRepository.findMotorcycleByIsAvailable(true);
+        return availableMotorcycles;
+    }
+
+    public List<Motorcycle> getMotorcyclesForSale(){
+        List<Motorcycle> MotorcyclesForSale = motorcycleRepository.findMotorcycleByIsForSale(true);
+        return MotorcyclesForSale;
+    }
+
+    public void changeForSaleStatus(Integer id,Integer owner_id,Boolean forSale,Double price){
+        Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(id);
+        if (motorcycle == null){
+            throw new ApiException("Motorcycle not found!");
+        }
+
+        Owner owner = ownerRepository.findOwnerById(owner_id);
+        if (owner == null){
+            throw new ApiException("Owner not found");
+        }
+        if (owner.getMotorcycles().contains(motorcycle)) {
+            motorcycle.setPrice(price);
+            motorcycle.setIsForSale(forSale);
+            motorcycleRepository.save(motorcycle);
+        }else {
+            throw new ApiException("The owner does not own this Motorcycle");
+        }
+    }
+
+
+    public void changeAvailableStatus(Integer id,Integer owner_id,Boolean Available){
+        Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(id);
+        if (motorcycle == null){
+            throw new ApiException("Motorcycle not found!");
+        }
+        Owner owner = ownerRepository.findOwnerById(owner_id);
+        if (owner == null){
+            throw new ApiException("Owner not found");
+        }
+        if (owner.getMotorcycles().contains(motorcycle)) {
+            motorcycle.setIsAvailable(Available);
+            motorcycleRepository.save(motorcycle);
+        }else {
+            throw new ApiException("The owner does not own this Motorcycle");
+        }
+    }
+
+
+    public void discountMotorcycle(Integer motorcycle_id, Integer owner_id,Double discountRate){
+        Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(motorcycle_id);
+        if (motorcycle == null){
+            throw new ApiException("Motorcycle not found!");
+        }
+        Owner owner = ownerRepository.findOwnerById(owner_id);
+        Owner ownerMotorcycle = ownerRepository.findOwnerByMotorcyclesId(motorcycle.getId());
+        if (owner == null ){
+            throw new ApiException("Owner not found!");
+        }
+        ArrayList<Double> allowedDiscounts = new ArrayList<>();
+        allowedDiscounts.add(20.0);
+        allowedDiscounts.add(35.0);
+        allowedDiscounts.add(50.0);
+        if (motorcycle.getIsForSale()){
+            if (motorcycle.getIsAvailable()){
+                if(allowedDiscounts.contains(discountRate)){
+                    double newPrice = motorcycle.getPrice() * (1 - discountRate / 100);
+                    motorcycle.setPrice(newPrice);
+                    motorcycle.setHasOffer(true);
+                    motorcycleRepository.save(motorcycle);
+                }else {
+                    throw new ApiException("Not valid discount rate!");
+                }
+            }else {
+                throw new ApiException("Motorcycle not Available!");
+            }
+        }else {
+            throw new ApiException("Motorcycle not ForSale!");
+        }
+
+    }
+
+    public Double CalculateAveragePriceForSameBrandAndYear(String brand,Integer year){
+        List<Motorcycle> SameBrandAndYear = motorcycleRepository.findMotorcycleByBrandAndYear(brand,year);
+        List<Motorcycle> forSale = new ArrayList<>();
+
+        Double price =0.0;
+        for (Motorcycle motorcycle : SameBrandAndYear){
+            if (motorcycle.getIsForSale()){
+                forSale.add(motorcycle);
+                price += motorcycle.getPrice();
+            }
+        }
+        return price/forSale.size();
+    }
+
+
+
+    public List<MotorcycleOutDTO> byBrandAndModel(String brand,String model){
+        List<Motorcycle> BrandAndModel = motorcycleRepository.findMotorcycleByBrandAndModel(brand,model);
+        List<MotorcycleOutDTO> motorcycleOutDTOS = new ArrayList<>();
+
+        for(Motorcycle motorcycle : BrandAndModel){
+
+            MotorcycleOutDTO motorcycleOutDTO = new MotorcycleOutDTO(motorcycle.getBrand(), motorcycle.getModel(), motorcycle.getYear(), motorcycle.getPrice(), motorcycle.getColor(), motorcycle.getIsAvailable(),motorcycle.getIsForSale(),motorcycle.getHasOffer());
+
+            motorcycleOutDTOS.add(motorcycleOutDTO);
+        }
+        return motorcycleOutDTOS;
+    }
+
+
 
 
 

@@ -36,9 +36,8 @@ public class Motorcycle {
     @Column(columnDefinition = "int not null")
     private Integer year; // Year of manufacture
 
-    @Positive(message = "Price must be a positive number!")
     @Column(columnDefinition = "DOUBLE not null")
-    private Double price;
+    private Double price =0.0;
 
 
     @NotEmpty(message = "Color is required!")
@@ -52,6 +51,10 @@ public class Motorcycle {
     @Column(columnDefinition = "BOOLEAN not null default false")
     private Boolean isForSale = false;
 
+    @Column(columnDefinition = "BOOLEAN not null default false")
+    Boolean hasOffer = false;
+
+
     //Relations
 
     @ManyToOne
@@ -64,7 +67,7 @@ public class Motorcycle {
     private Company company; // Company that is selling the motorcycle
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "motorcycle")
-    private Set<EventRegistration> eventRegistrations;
+    private Set<OwnerEventRegistration> ownerEventRegistrations;
 
 
 

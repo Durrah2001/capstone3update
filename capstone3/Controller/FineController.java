@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.capstone3.ApiResponse.ApiResponse;
 import org.example.capstone3.Service.FineService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/motorcycle-system/fine")
+
 public class FineController {
 
     private final FineService fineService;

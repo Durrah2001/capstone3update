@@ -21,5 +21,8 @@ public class MotorcycleOutDTO {
 
     private Boolean isForSale;
 
+    private Boolean hasOffer;
+
+
 
 }

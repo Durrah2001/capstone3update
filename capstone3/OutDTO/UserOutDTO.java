@@ -21,7 +21,9 @@ public class UserOutDTO {
     private String address;
 
 
-    private List<EventRegistrationOutDTO> eventRegistrations;
+    //private List<EventRegistrationDTO> eventRegistrations;
+
+    private List<UserEventRegistrationOutDTO> eventRegistrations;
 
     private List<PurchaseOutDTO> purchases;
 

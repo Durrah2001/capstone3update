@@ -8,6 +8,8 @@ import org.example.capstone3.Service.RentingRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/motorcycle-system/renting-request")
@@ -41,6 +43,11 @@ public class RentingRequestController {
 
 
 
+    @PutMapping("/extend-rental/{rentingRequestId}/{newEndDate}/{userId}")
+    public ResponseEntity extendRental(@PathVariable Integer rentingRequestId,@PathVariable LocalDate newEndDate,@PathVariable Integer userId) {
+        rentingRequestService.extendRental(rentingRequestId,newEndDate,userId);
+        return ResponseEntity.status(200).body(new ApiResponse("Renting Request Extend "));
+    }
 
 
 

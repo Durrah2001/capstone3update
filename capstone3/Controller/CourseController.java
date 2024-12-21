@@ -25,7 +25,7 @@ public class CourseController {
     }
 
     @PostMapping("/add/{owner_id}")
-    public ResponseEntity addBranch(@PathVariable Integer owner_id, @RequestBody @Valid Course course) {
+    public ResponseEntity addCourse(@PathVariable Integer owner_id, @RequestBody @Valid Course course) {
 
         courseService.addCourse(owner_id, course);
         return ResponseEntity.status(200).body(new ApiResponse("Course added successfully!"));
@@ -71,6 +71,16 @@ public class CourseController {
         return ResponseEntity.ok(popularCourses);
     }
 
+    @GetMapping("/upcomingCourses/{userId}")
+    public ResponseEntity upcomingCourses(@PathVariable Integer userId){
+        return ResponseEntity.status(200).body(courseService.upcomingCourses(userId));
+    }
+
+
+    @GetMapping("/filterCourses/{minPrice}/{maxPrice}/{minDuration}/{maxDuration}")
+    public ResponseEntity filterCourses(@PathVariable Double minPrice,@PathVariable Double maxPrice, @PathVariable Integer minDuration, @PathVariable Integer maxDuration){
+        return ResponseEntity.status(200).body(courseService.filterCourses(minPrice,maxPrice,minDuration,maxDuration));
+    }
 
 
 }

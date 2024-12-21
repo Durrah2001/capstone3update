@@ -41,12 +41,12 @@ public class RentingRequestService {
 
     public Integer addRentingRequest(RentingRequestDTO_In rentingRequestDTOIn) {
         // Step 1: Validate input dates
-        if (rentingRequestDTOIn.getStartDate().isAfter(rentingRequestDTOIn.getEndDate())) {
-            throw new ApiException("Start date cannot be after end date!");
-        }
-        if (rentingRequestDTOIn.getStartDate().isBefore(LocalDate.now())) {
-            throw new ApiException("Start date must be today or in the future!");
-        }
+//        if (rentingRequestDTOIn.getStartDate().isAfter(rentingRequestDTOIn.getEndDate())) {
+//            throw new ApiException("Start date cannot be after end date!");
+//        }
+//        if (rentingRequestDTOIn.getStartDate().isBefore(LocalDate.now())) {
+//            throw new ApiException("Start date must be today or in the future!");
+//        }
 
         // Step 2: Check if the Renting offer exists
         Renting renting = rentingRepository.findRentingById(rentingRequestDTOIn.getRenting_id());
@@ -71,7 +71,7 @@ public class RentingRequestService {
         rentingRequest.setRenting(renting);
         rentingRequest.setStartDate(rentingRequestDTOIn.getStartDate());
         rentingRequest.setEndDate(rentingRequestDTOIn.getEndDate());
-        rentingRequest.setMotorcycle_id(rentingRequestDTOIn.getMotorcycle_id());
+        rentingRequest.setMotorcycleId(rentingRequestDTOIn.getMotorcycle_id());
 
         // Calculate total cost based on price per day
         int totalCost = calculateTotalCost(renting.getPricePerDay(), rentingRequestDTOIn.getStartDate(), rentingRequestDTOIn.getEndDate());
@@ -128,7 +128,7 @@ public class RentingRequestService {
         existingRentingRequest.setEndDate(rentingRequestInDTO.getEndDate());
         existingRentingRequest.setRenting(renting);
         existingRentingRequest.setUser(user);
-        existingRentingRequest.setMotorcycle_id(rentingRequestInDTO.getMotorcycle_id());
+        existingRentingRequest.setMotorcycleId(rentingRequestInDTO.getMotorcycle_id());
 
         // Step 7: Recalculate and update total cost
         int totalCost = calculateTotalCost(renting.getPricePerDay(), rentingRequestInDTO.getStartDate(), rentingRequestInDTO.getEndDate());
@@ -166,6 +166,44 @@ public class RentingRequestService {
         rentingRequestRepository.delete(rentingRequest);
     }
 
+    public void extendRental(Integer rentingRequestId, LocalDate newEndDate,Integer userId) {
+        // Step 1: Validate the Renting Request exists
+        RentingRequest rentingRequest = rentingRequestRepository.findRentingRequestById(rentingRequestId) ;
+        if (rentingRequest == null) {
+            new ApiException("Renting Request not found");
+        }
+
+        // Step 2: Check that the new end date is after the current end date
+        if (newEndDate.isBefore(rentingRequest.getEndDate()) || newEndDate.isEqual(rentingRequest.getEndDate())) {
+            throw new ApiException("New end date must be after the current end date!");
+        }
+
+        // Step 3: Check motorcycle availability for the new period
+        boolean isRented = rentingRepository.existsByMotorcycleAndDateRange(
+                rentingRequest.getRenting().getMotorcycle_id(),
+                rentingRequest.getStartDate(), // Start checking from the day after the current end date
+                newEndDate
+        );
+        if (!isRented) {
+            throw new ApiException("The motorcycle is not available for the requested extension period!");
+        }
+
+        if(rentingRequest.getUser().getId() == userId) {
+            // Step 4: Update the end date
+            rentingRequest.setEndDate(newEndDate);
+
+            // Step 5: Recalculate the total cost
+            int updatedTotalCost = calculateTotalCost(
+                    rentingRequest.getRenting().getPricePerDay(),
+                    rentingRequest.getStartDate(),
+                    newEndDate
+            );
+            rentingRequest.setTotalCost(updatedTotalCost);
+
+            // Step 6: Save the updated RentingRequest
+            rentingRequestRepository.save(rentingRequest);
+        }
+    }
 
 
 

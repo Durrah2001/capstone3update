@@ -33,7 +33,7 @@ public class RentingService {
 
         for(Renting renting : rentings){
             Motorcycle motorcycle = motorcycleRepository.findMotorcycleById(renting.getMotorcycle_id());
-            MotorcycleOutDTO motorcycleDTO = new MotorcycleOutDTO(motorcycle.getBrand(),motorcycle.getModel(),motorcycle.getYear(),motorcycle.getPrice(),motorcycle.getColor(),motorcycle.getIsAvailable(),motorcycle.getIsForSale());
+            MotorcycleOutDTO motorcycleDTO = new MotorcycleOutDTO(motorcycle.getBrand(),motorcycle.getModel(),motorcycle.getYear(),motorcycle.getPrice(),motorcycle.getColor(),motorcycle.getIsAvailable(),motorcycle.getIsForSale(),motorcycle.getHasOffer());
             RentingOutDTO rentingDTO = new RentingOutDTO(renting.getPricePerDay(), renting.getPickupLocation(), renting.getDropOffLocation(), motorcycleDTO);
 
             rentingDTOS.add(rentingDTO);

@@ -44,7 +44,8 @@ public class OwnerService {
                     motorcycle.getPrice(),
                     motorcycle.getColor(),
                     motorcycle.getIsForSale(),
-                    motorcycle.getIsAvailable()
+                    motorcycle.getIsAvailable(),
+                    motorcycle.getHasOffer()
             )).collect(Collectors.toList());
 
             // Fetch courses for the owner

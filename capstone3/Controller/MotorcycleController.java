@@ -66,6 +66,45 @@ public class MotorcycleController {
         return ResponseEntity.ok(filteredMotorcycles);
     }
 
+    @GetMapping("/getAvailableMotorcycles")
+    public ResponseEntity getAvailableMotorcycles(){
+        return ResponseEntity.status(200).body(motorcycleService.getAvailableMotorcycles());
+    }
+
+    @GetMapping("/getMotorcyclesForSale")
+    public ResponseEntity getMotorcyclesForSale(){
+        return ResponseEntity.status(200).body(motorcycleService.getMotorcyclesForSale());
+    }
+
+    @PutMapping("/changeForSaleStatus/{id}/{ownerId}/{forSale}/{price}")
+    public ResponseEntity changeForSaleStatus(@PathVariable Integer id,@PathVariable Integer ownerId,@PathVariable Boolean forSale,@PathVariable Double price){
+        motorcycleService.changeForSaleStatus(id,ownerId,forSale,price);
+        return ResponseEntity.status(200).body(new ApiResponse("Status changes"));
+
+    }
+
+
+    @PutMapping("/change-available-status/{id}/{owner_id}/{isAvailable}")
+    public ResponseEntity changeAvailableStatus(@PathVariable Integer id,@PathVariable Integer owner_id,@PathVariable Boolean isAvailable){
+        motorcycleService.changeAvailableStatus(id,owner_id,isAvailable);
+        return ResponseEntity.status(200).body(new ApiResponse("AvailableStatus changed!"));
+    }
+
+    @PutMapping("/discount-motorcycle/{motorcycle_id}/{owner_id}/{discountRate}")
+    public ResponseEntity discountMotorcycle(@PathVariable Integer motorcycle_id,@PathVariable Integer owner_id,@PathVariable Double discountRate){
+        motorcycleService.discountMotorcycle(motorcycle_id,owner_id,discountRate);
+        return ResponseEntity.status(200).body(new ApiResponse("Discount motorcycle added"));
+    }
+
+    @GetMapping("/average-price-for-same-brand-and-year/{brand}/{year}")
+    public ResponseEntity CalculateAveragePriceForSameBrandAndYear(@PathVariable String brand,@PathVariable Integer year){
+        return ResponseEntity.status(200).body(motorcycleService.CalculateAveragePriceForSameBrandAndYear(brand,year));
+    }
+
+    @GetMapping("/by-brand-and-model/{brand}/{model}")
+    public ResponseEntity byBrandAndModel(@PathVariable String brand,@PathVariable String model){
+        return ResponseEntity.status(200).body(motorcycleService.byBrandAndModel(brand,model));
+    }
 
 
 

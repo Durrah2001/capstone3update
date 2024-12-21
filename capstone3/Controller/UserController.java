@@ -40,6 +40,11 @@ public class UserController {
     }
 
 
+    @GetMapping("/get-all-badge-user/{id}")
+    public ResponseEntity getAllBadge(@PathVariable Integer id){
+        return ResponseEntity.status(200).body(userService.getAllBadge(id));
+    }
+
 
 
 }

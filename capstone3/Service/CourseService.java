@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -207,6 +208,28 @@ public class CourseService {
         // Fetch all courses with their associated bookings, ordered by booking count
         return courseRepository.findTopCoursesByBookingCount();
     }
+
+    public List<Course> upcomingCourses(Integer userId){
+        List<Course> courses = new ArrayList<>();
+        User user = userRepository.findUserById(userId);
+        if (user == null){
+            throw new ApiException("User not found!");
+        }
+        List<Course> allCourses = courseRepository.findAll();
+        for(Course course : allCourses){
+            Set<BookingCourse> allBookingCourses = course.getBookings();
+            for(BookingCourse bookingCourse : allBookingCourses){
+                if (bookingCourse.getUser().getId() == user.getId()){
+                    if (bookingCourse.getCourseStartDate().isAfter(LocalDate.now())){
+                        courses.add(course);
+                    }
+                }
+            }
+        }
+        return courses;
+    }
+
+
 
 
 

@@ -24,8 +24,7 @@ public class MaintenanceRequestHistoryDTO {
     private List<MotorcycleOutDTO> motorcycleS;
 
 
+    public MaintenanceRequestHistoryDTO() {
 
-
-
-
+    }
 }

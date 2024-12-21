@@ -27,21 +27,30 @@ public class RentingRequest {
     private LocalDate requestDate = LocalDate.now();
 
     @Column(columnDefinition = "date not null")
-    @FutureOrPresent(message = "Start date must be in the present or future")
+  //  @FutureOrPresent(message = "Start date must be in the present or future")
     private LocalDate startDate;
 
     @Column(columnDefinition = "date not null")
-    @Future(message = "End date must be in the future")
+   // @Future(message = "End date must be in the future")
     private LocalDate endDate;
 
     @Column(columnDefinition = "int")
     private Integer totalCost;
 
     @Column(columnDefinition = "int not null")
-    private Integer motorcycle_id;
+    private Integer motorcycleId;
 
     @Column(columnDefinition = "boolean ")
     private Boolean isReturned;
+
+
+    public RentingRequest(LocalDate startDate, LocalDate endDate, User user, Renting renting,Integer motorcycleId) {
+        this.user = user;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.renting = renting;
+        this.motorcycleId=motorcycleId;
+    }
 
 
     ////////
@@ -62,6 +71,4 @@ public class RentingRequest {
 
 
 
-    public RentingRequest(@FutureOrPresent(message = "Start date must be in the present or future") LocalDate startDate, @Future(message = "End date must be in the future") LocalDate endDate, User user, Renting renting, Motorcycle motorcycle) {
-    }
 }

@@ -44,7 +44,15 @@ public class Event {
     @JsonIgnore
     private Company company;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-    private Set<EventRegistration> eventRegistrations;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "event")
+    private Set<UserEventRegistration> userEventRegistrations;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "event")
+    private Set<OwnerEventRegistration> ownerEventRegistrations;
+
+
+
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+//    private Set<EventRegistration> eventRegistrations;
 
 }
